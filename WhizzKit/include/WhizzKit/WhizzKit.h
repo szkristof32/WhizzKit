@@ -93,10 +93,77 @@ typedef struct WzOpenGLContextCreateInfo
 	const void* pWindowHandle;
 } WzOpenGLContextCreateInfo;
 
+/**
+* Creates a window.
+* 
+* Depending on the operating system, this method uses the correct API to
+* create a window.
+* 
+* @param pCreateInfo A struct that holds the necessary information for
+* creating the window.
+* @param[out] pWindow A pointer to a `WzWindow` object.
+* 
+* @return A boolean that indicates whether the process finished or not.
+*/
 WZ_API bool WZ_CALL wzCreateWindow(WzWindowCreateInfo* pCreateInfo, WzWindow* pWindow);
+/**
+* Listens to events.
+* 
+* This method uses the window creation API to listen to events, and
+* dispatches them.
+* 
+* @return
+*/
 WZ_API void WZ_CALL wzPollEvents();
+/**
+* Waits for events.
+* 
+* This method uses the window creation API to wait for an event.
+* Note, that this method is blocking.
+*
+* @return
+*/
 WZ_API bool WZ_CALL wzWaitForEvents();
+/**
+* Checks if window is about to be closed.
+* 
+* This method indicates whether the user wants to close the window.
+* 
+* @param window A WzWindow object whose state to be checked.
+* 
+* @return A boolean that indicates whether the user requested the closing or not.
+*/
 WZ_API bool WZ_CALL wzWindowShouldClose(WzWindow window);
+/**
+* Creates an OpenGL context.
+* 
+* This method uses the the current windowing API and the library called `Glad`
+* to create and OpenGL context, which can be used later on.
+* 
+* @param pContextCreateInfo A struct that holds the necessary information to create
+* an OpenGL context.
+* @param[out] pContext A pointer to a `WzOpenGLContext` object.
+*
+* @return A boolean that indicates whether the process finished or not.
+*/
 WZ_API bool WZ_CALL wzCreateOpenGLContext(WzOpenGLContextCreateInfo* pContextCreateInfo, WzOpenGLContext* pContext);
+/**
+* Swaps the buffers.
+* 
+* This method swaps the front and the backbuffer, what are abstracted away by
+* OpenGL. It is necessary to blit anything to the screen.
+* 
+* @param context A `WzOpenGLContext` object the swapping to be executed with.
+*/
 WZ_API void WZ_CALL wzSwapBuffersOpenGL(WzOpenGLContext context);
+/**
+* Destroys the OpenGL context.
+* 
+* This method destroys the OpenGL context. It is meant to be called at the very end
+* of the lifecycle of the application.
+* 
+* @param context A `WzOpenGLContext` object to be destroyed.
+* 
+* @return A boolean that indicates whether the process finished or not.
+*/
 WZ_API bool WZ_CALL wzDestroyOpenGLContext(WzOpenGLContext context);
