@@ -1,4 +1,4 @@
-#include "Window.h"
+#include "WhizzKit.h"
 
 #if defined(WZ_PLATFORM_WINDOWS)
 #include <Windows.h>

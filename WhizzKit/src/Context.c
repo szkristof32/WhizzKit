@@ -1,5 +1,4 @@
-#include "WhizzKit/Context.h"
-#include "WhizzKit/Window.h"
+#include "WhizzKit/WhizzKit.h"
 
 #include <glad/glad.h>
 
