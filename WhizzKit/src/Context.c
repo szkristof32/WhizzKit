@@ -1,76 +1,33 @@
 #include "WhizzKit/Context.h"
+#include "WhizzKit/Window.h"
 
 #include <glad/glad.h>
+
+#include <stdio.h>
 
 #if defined(WZ_PLATFORM_WINDOWS)
 #include <Windows.h>
 #include <WinUser.h>
-#endif
 
-#include <stdio.h>
-
-typedef struct WzContext_T
+typedef struct WzWindow_T
 {
-	const void* pContextPtr;
-	WzContextType contextType;
-} WzContext_T;
+	HWND pWindow;
+} WzWindow_T;
 
-typedef struct WzWGLContext
+typedef struct WzOpenGLContext_T
 {
 	HWND pHWND;
 	HDC pHDC;
 	HGLRC pHGLRC;
-} WzWGLContext;
+} WzOpenGLContext_T;
 
-bool WZ_CALL wzCreateOpenGLContext(WzContextCreateInfo* pContextCreateInfo, WzContext* pContext);
-void WZ_CALL wzSwapBuffersWGL(WzContext pContext);
-bool WZ_CALL wzDestroyOpenGLContext(WzContext pContext);
-
-WZ_API bool WZ_CALL wzCreateContext(WzContextCreateInfo* pContextCreateInfo, WzContext* pContext)
+WZ_API bool WZ_CALL wzCreateOpenGLContext(WzOpenGLContextCreateInfo* pContextCreateInfo, WzOpenGLContext* pContext)
 {
-	switch (pContextCreateInfo->contextType)
-	{
-		case WZ_CONTEXT_TYPE_OPENGL:	return wzCreateOpenGLContext(pContextCreateInfo, pContext);
-	}
+	*pContext = malloc(sizeof(WzOpenGLContext_T));
 
-	fprintf(stderr, "ERROR: invalid WzContextType provided.");
-	WZ_DEBUGBREAK();
-	return false;
-}
-
-WZ_API void WZ_CALL wzSwapBuffers(WzContext pContext)
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-	switch (pContext->contextType)
-	{
-		case WZ_CONTEXT_TYPE_OPENGL:	wzSwapBuffersWGL(pContext); return;
-	}
-
-	fprintf(stderr, "ERROR: invalid WzContextType provided.");
-	WZ_DEBUGBREAK();
-}
-
-WZ_API bool WZ_CALL wzDestroyContext(WzContext pContext)
-{
-	switch (pContext->contextType)
-	{
-		case WZ_CONTEXT_TYPE_OPENGL:	return wzDestroyOpenGLContext(pContext);
-	}
-
-	fprintf(stderr, "ERROR: invalid WzContextType provided.");
-	WZ_DEBUGBREAK();
-	return false;
-}
-
-bool WZ_CALL wzCreateOpenGLContext(WzContextCreateInfo* pContextCreateInfo, WzContext* pContext)
-{
-	*pContext = malloc(sizeof(WzContext_T));
-	(*pContext)->contextType = WZ_CONTEXT_TYPE_OPENGL;
-
-#if defined(WZ_PLATFORM_WINDOWS)
-	(*pContext)->pContextPtr = malloc(sizeof(WzWGLContext));
-	((WzWGLContext*)(*pContext)->pContextPtr)->pHWND = pContextCreateInfo->pNativeWindowHandle;
-	((WzWGLContext*)(*pContext)->pContextPtr)->pHDC = GetDC((HWND)pContextCreateInfo->pNativeWindowHandle);
+	WzWindow window = pContextCreateInfo->pWindowHandle;
+	(*pContext)->pHWND = window->pWindow;
+	(*pContext)->pHDC = GetDC(window->pWindow);
 
 	PIXELFORMATDESCRIPTOR pfd = {
 			sizeof(PIXELFORMATDESCRIPTOR),
@@ -92,37 +49,37 @@ bool WZ_CALL wzCreateOpenGLContext(WzContextCreateInfo* pContextCreateInfo, WzCo
 			0,
 			0, 0, 0
 	};
-	int pf = ChoosePixelFormat(((WzWGLContext*)(*pContext)->pContextPtr)->pHDC, &pfd);
+	int pf = ChoosePixelFormat((*pContext)->pHDC, &pfd);
 	{
-		bool result = SetPixelFormat(((WzWGLContext*)(*pContext)->pContextPtr)->pHDC, pf, &pfd);
+		bool result = SetPixelFormat((*pContext)->pHDC, pf, &pfd);
 		if (!result) return false;
 	}
 
-	((WzWGLContext*)(*pContext)->pContextPtr)->pHGLRC = wglCreateContext(((WzWGLContext*)(*pContext)->pContextPtr)->pHDC);
+	(*pContext)->pHGLRC = wglCreateContext((*pContext)->pHDC);
 	{
-		bool result = wglMakeCurrent(((WzWGLContext*)(*pContext)->pContextPtr)->pHDC, ((WzWGLContext*)(*pContext)->pContextPtr)->pHGLRC);
+		bool result = wglMakeCurrent((*pContext)->pHDC, (*pContext)->pHGLRC);
 		if (!result) return false;
 	}
 	{
 		bool result = gladLoadGL();
 		if (!result) return false;
 	}
-#endif
 
 	return true;
 }
 
-void WZ_CALL wzSwapBuffersWGL(WzContext pContext)
+void WZ_CALL wzSwapBuffersOpenGL(WzOpenGLContext pContext)
 {
-	SwapBuffers(((WzWGLContext*)pContext->pContextPtr)->pHDC);
+	SwapBuffers(pContext->pHDC);
 }
 
-bool WZ_CALL wzDestroyOpenGLContext(WzContext pContext)
+bool WZ_CALL wzDestroyOpenGLContext(WzOpenGLContext pContext)
 {
 	bool result = true;
-	result &= ReleaseDC(((WzWGLContext*)pContext->pContextPtr)->pHWND, ((WzWGLContext*)pContext->pContextPtr)->pHDC);
-	result &= wglDeleteContext(((WzWGLContext*)pContext->pContextPtr)->pHGLRC);
+	result &= ReleaseDC(pContext->pHWND, pContext->pHDC);
+	result &= wglDeleteContext(pContext->pHGLRC);
 
 	free(pContext);
 	return true;
 }
+#endif

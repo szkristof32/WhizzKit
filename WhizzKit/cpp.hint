@@ -4,3 +4,4 @@
 #define WZ_API __declspec(dllexport)
 #define WZ_API __declspec(dllimport)
 #define WZ_DEFINE_HANDLE(object)
+#define WZ_CALL

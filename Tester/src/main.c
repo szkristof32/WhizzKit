@@ -1,26 +1,26 @@
-#include "window.h"
-
 #include <WhizzKit/WhizzKit.h>
-#include <WinUser.h>
 
 int main()
 {
-	HWND window;
-	CreateNewWindow(1600, 900, L"WhizzKit tester", &window);
-	WzContext context;
-	WzContextCreateInfo contextCreateInfo = { 0 };
-	contextCreateInfo.contextType = WZ_CONTEXT_TYPE_OPENGL;
-	contextCreateInfo.pNativeWindowHandle = window;
-	wzCreateContext(&contextCreateInfo, &context);
+	WzWindow window;
+	WzWindowCreateInfo windowCreateInfo = { 0 };
+	windowCreateInfo.width = 1600;
+	windowCreateInfo.height = 900;
+	windowCreateInfo.pTitle = "WhizzKit demo";
+	windowCreateInfo.resizable = true;
+	windowCreateInfo.windowPosition = WZ_WINDOW_POSITION_CENTER_SCREEN;
+	wzCreateWindow(&windowCreateInfo, &window);
 
-	int running = 1;
-	while (running)
+	WzOpenGLContext context;
+	WzOpenGLContextCreateInfo contextCreateInfo = { 0 };
+	contextCreateInfo.pWindowHandle = window;
+	wzCreateOpenGLContext(&contextCreateInfo, &context);
+
+	while (wzWindowShouldClose(window))
 	{
-		PollWindowEvents(window);
-		running = 1 - WindowShouldClose(window);
-
-		wzSwapBuffers(context);
+		wzPollEvents();
+		wzSwapBuffersOpenGL(context);
 	}
 
-	wzDestroyContext(context);
+	wzDestroyOpenGLContext(context);
 }
