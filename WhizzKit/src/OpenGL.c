@@ -82,3 +82,21 @@ bool WZ_CALL wzDestroyOpenGLContext(WzOpenGLContext pContext)
 	return true;
 }
 #endif
+
+GLbitfield wzClearFlagToGLbitfield(WzClearFlags clearFlags)
+{
+	GLbitfield bitfield = 0;
+
+	if (clearFlags & WZ_CLEAR_COLOUR_BUFFER)
+		bitfield |= GL_COLOR_BUFFER_BIT;
+	if (clearFlags & WZ_CLEAR_DEPTH_BUFFER)
+		bitfield |= GL_DEPTH_BUFFER_BIT;
+
+	return bitfield;
+}
+
+void WZ_CALL wzClearScreenOpenGL(WzColour colour, WzClearFlags clearFlags)
+{
+	glClearColor(colour.r, colour.g, colour.b, colour.a);
+	glClear(wzClearFlagToGLbitfield(clearFlags));
+}

@@ -16,9 +16,15 @@ int main()
 	contextCreateInfo.pWindowHandle = window;
 	wzCreateOpenGLContext(&contextCreateInfo, &context);
 
+	WzColour clearColour = {
+		1.0f, 0.0f, 1.0f, 1.0f
+	};
+
 	while (wzWindowShouldClose(window))
 	{
 		wzPollEvents();
+
+		wzClearScreenOpenGL(clearColour, WZ_CLEAR_COLOUR_BUFFER);
 		wzSwapBuffersOpenGL(context);
 	}
 

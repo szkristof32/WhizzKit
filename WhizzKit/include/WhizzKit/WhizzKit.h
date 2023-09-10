@@ -75,8 +75,8 @@ WZ_DEFINE_HANDLE(WzOpenGLContext)
 
 typedef enum WzWindowPosition
 {
-	WZ_WINDOW_POSITION_DEFAULT = 0,
-	WZ_WINDOW_POSITION_CENTER_SCREEN = 1
+	WZ_WINDOW_POSITION_DEFAULT = 1,
+	WZ_WINDOW_POSITION_CENTER_SCREEN = 2
 } WzWindowPosition;
 
 typedef struct WzWindowCreateInfo
@@ -92,6 +92,20 @@ typedef struct WzOpenGLContextCreateInfo
 {
 	const void* pWindowHandle;
 } WzOpenGLContextCreateInfo;
+
+typedef enum WzClearFlags
+{
+	WZ_CLEAR_COLOUR_BUFFER = 1,
+	WZ_CLEAR_DEPTH_BUFFER = 2
+} WzClearFlags;
+
+typedef struct WzColour
+{
+	float r;
+	float g;
+	float b;
+	float a;
+} WzColour;
 
 /**
 * Creates a window.
@@ -167,3 +181,12 @@ WZ_API void WZ_CALL wzSwapBuffersOpenGL(WzOpenGLContext context);
 * @return A boolean that indicates whether the process finished or not.
 */
 WZ_API bool WZ_CALL wzDestroyOpenGLContext(WzOpenGLContext context);
+/**
+* Clears the screen.
+* 
+* This method uses OpenGL to clear the given buffers to the given colour.
+* 
+* @param colour The colour the screen to be cleared.
+* @param clearFlags Flags that indicate the buffers to be cleared.
+*/
+WZ_API void WZ_CALL wzClearScreenOpenGL(WzColour colour, WzClearFlags clearFlags);
