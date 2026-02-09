@@ -18,8 +18,8 @@ workspace "WhizzKit"
 	}
 
 	filter "action:vs*"
-        	linkoptions { "/ignore:4099", "/ignore:4006" }
-        	disablewarnings { "4068", "4455" }
+		linkoptions { "/ignore:4099", "/ignore:4006" }
+		disablewarnings { "4068", "4455" }
 		buildoptions { "/EHsc", "/Zc:preprocessor", "/Zc:__cplusplus" }
 
 	filter "configurations:Debug"
@@ -55,7 +55,6 @@ project "WhizzKit"
 	files
 	{
 		"include/**.h",
-		"src/**.cpp"
 	}
 
 	includedirs
